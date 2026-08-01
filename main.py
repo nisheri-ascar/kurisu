@@ -10,7 +10,7 @@ import subprocess
 dotenv.load_dotenv()
 PRIV_TOKEN = str(os.getenv("TOKEN"))
 HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
-IP_ADDR = str(os.getenv("MC_IP_ADDR")) # FIXME: make this on .env file.
+MC_IP_ADDR = str(os.getenv("MC_IP_ADDR")) # FIXME: make this on .env file.
 
 
 intents = discord.Intents.default()
