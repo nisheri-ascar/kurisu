@@ -1,18 +1,17 @@
 from mcstatus import JavaServer
 import sys
 
-IP_ADDR = "mc.hypixel.ne"
+IP_ADDR = "white-navigate.gl.at.ply.gg"
 
 try:
 	server = JavaServer.lookup(IP_ADDR)
 	status = server.status()
+	print(status)
+	if status.players.max > 0:
+		print("server is up!")
+		print(status.players.max)
 except:
 	print("error!")
-	sys.exit(1)
 
-print(status.players.online)
 
-if status.players.online > 0:
-	print("server is up!")
-else: 
-	print("error!")
+
