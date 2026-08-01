@@ -2,6 +2,7 @@ added functionalities:
 
 - able to access via bot command
 - did phase 0 and phase 1
+- remove del r, msg. rewrite function to use try else instead of borked if and elses
 
 todo:
 

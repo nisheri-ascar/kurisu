@@ -3,15 +3,25 @@ import dotenv
 import os
 import asyncio
 import httpx
+import mcstatus
 
 dotenv.load_dotenv()
 PRIV_TOKEN = str(os.getenv("TOKEN"))
 HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
+IP_ADDR = "mc.hypixel.net" # FIXME: make this on .env file.
 
 intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
+
+def check_server_status():
+    # this is syncronous code, pls check later if this actually works inside async
+    try:
+        server = JavaServer.lookup(IP_ADDR)
+        status = server.status()
+    except:
+        print("cannot access server!!")
 
 @client.event
 async def on_ready():
@@ -34,19 +44,18 @@ async def on_message(message):
                 # process of starting the server starts here
                 await message.channel.send("starting server!")
                 # phase 0 self check
+                
                 msg = await message.channel.send("phase 0: checking if i can access myself 🔶")
                 async with httpx.AsyncClient() as status:
-                    r = await status.get("https://www.google.com")
-                    print(r.status_code)
-                    if r.status_code == 200:
-                        print("success")
-                        await msg.edit(content="phase 0: okay, i can access myself 🟢")
+                    await asyncio.sleep(1)
+                    try:
+                        r = await status.get(HOSTED_LINK)
+                    except:
+                        await msg.edit("phase 0: ERROR! I can't access myself!❗❗❗")
                     else:
-                        print(f"error {r.status_code}")
-
+                        await msg.edit(content="phase 0: okay, i can access myself 🟢")
 
                 #phase 1 remote shell
-                del r, msg
                 msg = await message.channel.send("phase 1: checking if i can access the remote shell 🔶")
                 async with httpx.AsyncClient() as status:
                     await asyncio.sleep(1) # change me to 60 later
@@ -54,9 +63,11 @@ async def on_message(message):
                         r = await status.get("http://localhost:8080")
                     except:
                         await msg.edit(content="phase 1: ERROR, I can't access the remote shell! ❗❗❗")
-                    if r.status_code == 200:
+                    else:
                         print("success")
                         await msg.edit(content="phase 1: okay, i can access the remote shell 🟢")
+
+
 
 
 client.run(PRIV_TOKEN)
