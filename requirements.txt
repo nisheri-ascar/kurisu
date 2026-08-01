@@ -1,0 +1,4 @@
+dotenv
+py-cord
+httpx
+mcstatus

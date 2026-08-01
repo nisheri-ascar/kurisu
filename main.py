@@ -48,6 +48,7 @@ async def on_message(message):
                 #phase 1 remote shell
                 msg = await message.channel.send("phase 1: checking if i can access the remote shell 🔶")
                 async with httpx.AsyncClient() as status:
+                    await asyncio.sleep(60)
                     r = await status.get("http://localhost:8080")
                     print(r.status_code)
                     if r.status_code == 200:
