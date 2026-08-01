@@ -4,16 +4,29 @@ import os
 import asyncio
 import httpx
 import mcstatus
+import sys
 
 dotenv.load_dotenv()
 PRIV_TOKEN = str(os.getenv("TOKEN"))
 HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
 IP_ADDR = "mc.hypixel.net" # FIXME: make this on .env file.
 
+
 intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
+
+def check_variables():
+    if PRIV_TOKEN == "":
+        print("token empty!")
+        sys.exit(1)
+    if HOSTED_LINK == "":
+        print("HOSTED_LINK empty!")
+        sys.exit(1)
+    if IP_ADDR == "":
+        print("IP_ADDR emtpy!")
+        sys.exit(1)
 
 def check_server_status():
     # this is syncronous code, pls check later if this actually works inside async
@@ -70,4 +83,5 @@ async def on_message(message):
 
 
 
+check_variables()
 client.run(PRIV_TOKEN)
