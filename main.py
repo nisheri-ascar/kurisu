@@ -31,10 +31,9 @@ def check_variables():
 
 def check_server_status():
     try:
-        server = JavaServer.lookup(IP_ADDR)
+        server = JavaServer.lookup(MC_IP_ADDR)
         status = server.status()
-        if status.players.max > 0:
-            return 0
+        return 0
     except:
         print("cannot access server!!")
         return 1
@@ -63,7 +62,8 @@ async def on_message(message):
                 now = datetime.now()
                 await message.channel.send(f"**Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**")
                 try:
-                    subprocess.run(["./run-server.sh"])
+                    #subprocess.run(["./run-server.sh"])
+                    pass
                 except:
                     await message.channel.send("**🔴 Phase 0**: Failed to run start script!")
                 else:
@@ -74,7 +74,7 @@ async def on_message(message):
                 await asyncio.sleep(30) 
                 async with httpx.AsyncClient() as status:
                     try:
-                        r = await status.get("127.0.0.1:6969")
+                        r = await status.get("http://127.0.0.1:6969")
                     except:
                         await msg.edit(content="**🔴 Phase 1**: ERROR, Cannot access Remote Shell!")
                     else:
