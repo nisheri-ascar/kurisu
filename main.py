@@ -11,7 +11,8 @@ from datetime import datetime
 dotenv.load_dotenv()
 PRIV_TOKEN = str(os.getenv("TOKEN"))
 HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
-MC_IP_ADDR = str(os.getenv("MC_IP_ADDR")) 
+MC_IP_ADDR = str(os.getenv("MC_IP_ADDR"))
+DEBUG = False
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -58,12 +59,15 @@ async def on_message(message):
             await message.channel.send("todo: help")
         elif user_msg[1] == "server":
             if user_msg[2] == "start":
+            # FIXME: move around this one on its own function.
                 # process of starting the server starts here
                 now = datetime.now()
                 await message.channel.send(f"**Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**")
                 try:
-                    #subprocess.run(["./run-server.sh"])
-                    pass
+                    if DEBUG != True:
+                        subprocess.run(["./run-server.sh"])
+                    else:
+                        pass
                 except:
                     await message.channel.send("**🔴 Phase 0**: Failed to run start script!")
                 else:
@@ -71,7 +75,7 @@ async def on_message(message):
 
                 #phase 1
                 msg = await message.channel.send("**🔶 Phase 1**: checking if i can access the remote shell *(30s)*")
-                await asyncio.sleep(30) 
+                await asyncio.sleep(30)
                 async with httpx.AsyncClient() as status:
                     try:
                         r = await status.get("http://127.0.0.1:6969")
@@ -82,12 +86,19 @@ async def on_message(message):
                         await msg.edit(content="**🟢 Phase 1**: Cloud Server is accessable")
 
                 # phase 2
-                msg = await message.channel.send("**🔶 Phase 2**: Checking Public IP Minecraft Server *(120s)* ")
-                await asyncio.sleep(60) 
+                msg = await message.channel.send("**🔶 Phase 2**: Checking Public IP Minecraft Server *(80s)* ")
+                await asyncio.sleep(80) 
                 if check_server_status() == 0:
                     await msg.edit("**🟢 Phase 2**: Minecraft Server is accessable ")
                 else:
                     await msg.edit("**🔴 Phase 2**: Minecraft Server is down! Is proxy down? ")
+
+            elif user_msg[2] == "check":
+                # FIXME: Dont Repeat Yourself!
+                if check_server_status() == 0:
+                    await message.channel.send("**🟢 Phase 2**: Minecraft Server is accessable ")
+                else:
+                    await message.channel.send("**🔴 Phase 2**: Minecraft Server is down! Is proxy down? ")
 
 
 
