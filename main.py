@@ -22,12 +22,13 @@ DRY_RUN = True
 httpd = None
 
 
-
-
+now = datetime.now()
+print(f"Crossed World Line at {now.strftime("%Y-%m-%d %H:%M:%S")}")
 intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
+
 
 def check_variables():
     if PRIV_TOKEN == "":
