@@ -7,12 +7,22 @@ from mcstatus import JavaServer
 import sys
 import subprocess
 from datetime import datetime
+import http.server
+import socketserver
+import functools
+
+
 
 dotenv.load_dotenv()
 PRIV_TOKEN = str(os.getenv("TOKEN"))
 HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
 MC_IP_ADDR = str(os.getenv("MC_IP_ADDR"))
-DEBUG = False
+HTTP_PORT = 6969 # FIXME: use envvar
+DRY_RUN = True
+Handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory="./website")
+
+
+
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -44,6 +54,9 @@ def check_server_status():
 @client.event
 async def on_ready():
     print(f"i am {client.user}")
+    with socketserver.TCPServer(("", HTTP_PORT), Handler) as httpd:
+        print("Serving at port: ", HTTP_PORT)
+        httpd.serve_forever()
 
 @client.event
 async def on_message(message):
@@ -64,7 +77,7 @@ async def on_message(message):
                 now = datetime.now()
                 await message.channel.send(f"**Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**")
                 try:
-                    if DEBUG != True:
+                    if DRY_RUN != True:
                         subprocess.run(["./run-server.sh"])
                     else:
                         pass
@@ -87,7 +100,7 @@ async def on_message(message):
 
                 # phase 2
                 msg = await message.channel.send("**🔶 Phase 2**: Checking Public IP Minecraft Server *(80s)* ")
-                await asyncio.sleep(80) 
+                await asyncio.sleep(80)
                 if check_server_status() == 0:
                     await msg.edit("**🟢 Phase 2**: Minecraft Server is accessable ")
                 else:
@@ -100,8 +113,12 @@ async def on_message(message):
                 else:
                     await message.channel.send("**🔴 Phase 2**: Minecraft Server is down! Is proxy down? ")
 
-
+ 
 
 
 check_variables()
-client.run(PRIV_TOKEN)
+try:
+    client.run(PRIV_TOKEN)
+except KeyboardInterrupt as e:
+    print(f"exiting as stated from {e}")
+    sys.exit(0)
