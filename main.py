@@ -10,7 +10,7 @@ from datetime import datetime
 import http.server
 import socketserver
 import functools
-
+import threading
 
 
 dotenv.load_dotenv()
@@ -19,7 +19,7 @@ HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
 MC_IP_ADDR = str(os.getenv("MC_IP_ADDR"))
 HTTP_PORT = 6969 # FIXME: use envvar
 DRY_RUN = True
-Handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory="./website")
+httpd = None
 
 
 
@@ -49,14 +49,18 @@ def check_server_status():
         print("cannot access server!!")
         return 1
 
+def http_server():
+    global httpd
+    Handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory="./website")
+    httpd = socketserver.TCPServer(("", HTTP_PORT), Handler)
+    print("Server at port: ", HTTP_PORT)
+    httpd.serve_forever()
 
 
 @client.event
 async def on_ready():
     print(f"i am {client.user}")
-    with socketserver.TCPServer(("", HTTP_PORT), Handler) as httpd:
-        print("Serving at port: ", HTTP_PORT)
-        httpd.serve_forever()
+    threading.Thread(target=http_server, daemon=True).start()
 
 @client.event
 async def on_message(message):
