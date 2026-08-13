@@ -22,7 +22,7 @@ DRY_RUN = str(os.getenv("DRY_RUN"))
 httpd = None
 global version
 try:
-    file_commit = open("/version", 'r')
+    file_commit = open("./version", 'r')
     commit = file_commit.read()
 except FileNotFoundError as err:
     print("can't find commit.")
