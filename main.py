@@ -20,14 +20,23 @@ MC_IP_ADDR = str(os.getenv("MC_IP_ADDR"))
 HTTP_PORT = 6969 # FIXME: use envvar
 DRY_RUN = str(os.getenv("DRY_RUN"))
 httpd = None
+global version
+try:
+    file_commit = open("/version", 'r')
+    commit = file_commit.read()
+except FileNotFoundError as err:
+    print("can't find commit.")
+    commit = "???"
 
 
 now = datetime.now()
-print(f"Crossed World Line at {now.strftime("%Y-%m-%d %H:%M:%S")}")
+print(f"Crossed World Line at {now.strftime("%Y-%m-%d %H:%M:%S")} with commit {commit}")
 intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
+
+
 
 
 def check_variables():
@@ -79,6 +88,7 @@ async def on_message(message):
             if user_msg[2] == "start":
             # FIXME: move around this one on its own function.
                 # process of starting the server starts here
+                await message.channel.send(f"Kurisu Development Hash Commit: `{commit}`")
                 now = datetime.now()
                 await message.channel.send(f"**Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**")
                 try:
