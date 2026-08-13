@@ -18,7 +18,7 @@ PRIV_TOKEN = str(os.getenv("TOKEN"))
 HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
 MC_IP_ADDR = str(os.getenv("MC_IP_ADDR"))
 HTTP_PORT = 6969 # FIXME: use envvar
-DRY_RUN = True
+DRY_RUN = str(os.getenv("DRY_RUN"))
 httpd = None
 
 
