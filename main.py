@@ -19,6 +19,7 @@ HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
 MC_IP_ADDR = str(os.getenv("MC_IP_ADDR"))
 HTTP_PORT = 8080 # FIXME: use envvar
 DRY_RUN = str(os.getenv("DRY_RUN"))
+BASE_TIME_WAIT=30
 httpd = None
 global version
 try:
@@ -100,6 +101,7 @@ async def on_message(message):
                     if DRY_RUN != True:
                         threading.Thread(target=start_script, daemon=True).start()
                         # FIXME: when implementing stop command, please make this have some flags.
+                        # FIXME: add some guard check if the server is started multiple times OR server is in process of starting
                     else:
                         pass
                 except:
@@ -108,8 +110,8 @@ async def on_message(message):
                     await message.channel.send("**🟢 Phase 0**: Successfully started script!")
 
                 #phase 1
-                msg = await message.channel.send("**🔶 Phase 1**: checking if i can access the remote shell *(30s)*")
-                await asyncio.sleep(30)
+                msg = await message.channel.send(f"**🔶 Phase 1**: checking if i can access the remote shell *({BASE_TIME_WAIT}s)*")
+                await asyncio.sleep(BASE_TIME_WAIT*2)
                 async with httpx.AsyncClient() as status:
                     try:
                         r = await status.get("http://127.0.0.1:6969")
@@ -120,8 +122,8 @@ async def on_message(message):
                         await msg.edit(content="**🟢 Phase 1**: Cloud Server is accessable")
 
                 # phase 2
-                msg = await message.channel.send("**🔶 Phase 2**: Checking Public IP Minecraft Server *(80s)* ")
-                await asyncio.sleep(80)
+                msg = await message.channel.send(f"**🔶 Phase 2**: Checking Public IP Minecraft Server *({BASE_TIME_WAIT*3}s)* ")
+                await asyncio.sleep(BASE_TIME_WAIT*3)
                 if check_server_status() == 0:
                     await msg.edit("**🟢 Phase 2**: Minecraft Server is accessable ")
                     await message.channel.send("**note:** server stops after 3 minutes of no players! be sure to join immediately!")
