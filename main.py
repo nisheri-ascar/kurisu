@@ -22,7 +22,7 @@ DRY_RUN = str(os.getenv("DRY_RUN"))
 httpd = None
 global version
 try:
-    file_commit = open("./version", 'r')
+    file_commit = open("/version", 'r')
     commit = file_commit.read()
 except FileNotFoundError as err:
     print("can't find commit.")
@@ -136,7 +136,6 @@ async def on_message(message):
                     await message.channel.send("**🔴 Phase 2**: Minecraft Server is down! Is proxy down? ")
             elif user_msg[2] == "stop":
                 await message.channel.send("not implemented **(yet!)**")
- 
 
 
 check_variables()
