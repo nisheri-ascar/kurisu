@@ -86,19 +86,20 @@ async def on_message(message):
         user_msg = message.content.split(" ")
         print(user_msg)
         if user_msg[1] == "help":
-            await message.channel.send("todo: help")
+            await message.channel.send("WIP")
+        elif user_msg[1] == "ping":
+            await message.channel.send("pong!")
+
         elif user_msg[1] == "server":
             if user_msg[2] == "start":
             # FIXME: move around this one on its own function.
                 # process of starting the server starts here
                 now = datetime.now()
-                await message.channel.send(f"""
-                    **Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**
-                    \n-# dev commit: `{commit}`
-                    """)
+                await message.channel.send(f"**Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**\n-# dev commit: `{commit}`")
                 try:
                     if DRY_RUN != True:
                         threading.Thread(target=start_script, daemon=True).start()
+                        # FIXME: when implementing stop command, please make this have some flags.
                     else:
                         pass
                 except:
@@ -123,6 +124,7 @@ async def on_message(message):
                 await asyncio.sleep(80)
                 if check_server_status() == 0:
                     await msg.edit("**🟢 Phase 2**: Minecraft Server is accessable ")
+                    await message.channel.send("**note:** server stops after 3 minutes of no players! be sure to join immediately!")
                 else:
                     await msg.edit("**🔴 Phase 2**: Minecraft Server is down! Is proxy down? ")
 
@@ -132,7 +134,8 @@ async def on_message(message):
                     await message.channel.send("**🟢 Phase 2**: Minecraft Server is accessable ")
                 else:
                     await message.channel.send("**🔴 Phase 2**: Minecraft Server is down! Is proxy down? ")
-
+            elif user_msg[2] == "stop":
+                await message.channel.send("not implemented **(yet!)**")
  
 
 
