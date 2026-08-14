@@ -66,6 +66,9 @@ def http_server():
     print("Server at port: ", HTTP_PORT)
     httpd.serve_forever()
 
+def start_script():
+    subprocess.run(["./run-server.sh"])
+
 
 @client.event
 async def on_ready():
@@ -91,11 +94,11 @@ async def on_message(message):
                 now = datetime.now()
                 await message.channel.send(f"""
                     **Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**
-                    -# dev commit: `{commit}`
+                    \n-# dev commit: `{commit}`
                     """)
                 try:
                     if DRY_RUN != True:
-                        subprocess.run(["./run-server.sh"])
+                        threading.Thread(target=start_script, daemon=True).start()
                     else:
                         pass
                 except:
