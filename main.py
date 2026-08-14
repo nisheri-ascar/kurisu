@@ -88,9 +88,11 @@ async def on_message(message):
             if user_msg[2] == "start":
             # FIXME: move around this one on its own function.
                 # process of starting the server starts here
-                await message.channel.send(f"Kurisu Development Hash Commit: `{commit}`")
                 now = datetime.now()
-                await message.channel.send(f"**Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**")
+                await message.channel.send(f"""
+                    **Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**
+                    -# dev commit: `{commit}`
+                    """)
                 try:
                     if DRY_RUN != True:
                         subprocess.run(["./run-server.sh"])
