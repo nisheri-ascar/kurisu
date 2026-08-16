@@ -19,6 +19,7 @@ HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
 MC_IP_ADDR = str(os.getenv("MC_IP_ADDR"))
 HTTP_PORT = 8080 # FIXME: use envvar
 DRY_RUN = str(os.getenv("DRY_RUN"))
+PRODUCTION_MODE=str(os.getenv("PRODUCTION_MODE"))
 BASE_TIME_WAIT=30
 httpd = None
 global version
@@ -38,7 +39,8 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 
-
+async def kurisu_devmode():
+    await message.channel.send("-# This instance of kurisu environment is running locally.")
 
 def check_variables():
     if PRIV_TOKEN == "":
@@ -97,6 +99,8 @@ async def on_message(message):
                 # process of starting the server starts here
                 now = datetime.now()
                 await message.channel.send(f"**Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**\n-# dev commit: `{commit}`")
+                if PRODUCTION_MODE == False:
+                    kurisu_devmode():
                 try:
                     if DRY_RUN != True:
                         threading.Thread(target=start_script, daemon=True).start()
