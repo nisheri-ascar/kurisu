@@ -1,4 +1,5 @@
 import discord
+from discord.ext import commands
 import dotenv
 import os
 import asyncio
@@ -13,6 +14,7 @@ import threading
 
 global version
 
+       # elif user_msg[1] == "ping":
 dotenv.load_dotenv()
 COMMAND_PREFIX = ".katagari"
 PRIV_TOKEN = str(os.getenv("TOKEN"))
@@ -22,7 +24,7 @@ HTTP_PORT = 8080 # FIXME: use envvar
 #DRY_RUN = str(os.getenv("DRY_RUN"))
 DRY_RUN = True
 PRODUCTION_MODE=str(os.getenv("PRODUCTION_MODE"))
-
+GUILD_ID = 1529471469464191057
 
 if DRY_RUN == True:
     BASE_TIME_WAIT = 0
@@ -39,18 +41,23 @@ except FileNotFoundError as err:
 
 
 print(f"Crossed World Line at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} with commit {commit}")
+
 intents = discord.Intents.default()
-intents.message_content = True
+bot = commands.Bot(command_prefix="/", intent=intents)
 
-client = discord.Client(intents=intents)
+@bot.tree.command(name="start", description="Start the Minecraft server!")
+async def start(interaction: discord.Interaction):
+    await interaction.response.defer()
+    await interaction.followup.send("hello world from newer framework!!")
 
-
-@client.event
+@bot.event
 async def on_ready():
-    print(f"i am {client.user}")
+    print(f"i am {bot.user}")
+    guild = discord.Object(id=GUILD_ID)
+    await bot.tree.sync(guild=guild)
     threading.Thread(target=http_server, args=(HTTP_PORT,), daemon=True).start()
 
-@client.event
+@bot.event
 async def on_message(message):
     print(f"{message.author} | {message.content}")
     #if message.author == client.user:
@@ -61,10 +68,9 @@ async def on_message(message):
         user_msg = message.content.split(" ")
         print(user_msg)
         if user_msg[1] == "help":
-            await message.channel.send("WIP")
+            commands.help(message)
         elif user_msg[1] == "ping":
-            await message.channel.send("pong!")
-
+            commands.ping(message)
         elif user_msg[1] == "server":
             if user_msg[2] == "start":
             # FIXME: move around this one on its own function.
@@ -121,5 +127,5 @@ async def on_message(message):
 
 
 
-client.run(PRIV_TOKEN)
+bot.run(PRIV_TOKEN)
 
