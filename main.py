@@ -7,11 +7,10 @@ from mcstatus import JavaServer
 import sys
 import subprocess
 from datetime import datetime
-import http.server
-import socketserver
-import functools
+from dummy_http import http_server
 import threading
 
+global version
 
 dotenv.load_dotenv()
 PRIV_TOKEN = str(os.getenv("TOKEN"))
@@ -22,14 +21,14 @@ DRY_RUN = str(os.getenv("DRY_RUN"))
 PRODUCTION_MODE=str(os.getenv("PRODUCTION_MODE"))
 BASE_TIME_WAIT=30
 httpd = None
-global version
+
 try:
     file_commit = open("/version", 'r')
     commit = file_commit.read()
 except FileNotFoundError as err:
     print("can't find commit.")
     commit = "???"
-
+COMMAND_PREFIX = ".katagari"
 
 now = datetime.now()
 print(f"Crossed World Line at {now.strftime("%Y-%m-%d %H:%M:%S")} with commit {commit}")
@@ -62,12 +61,7 @@ def check_server_status():
         print("cannot access server!!")
         return 1
 
-def http_server():
-    global httpd
-    Handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory="./website")
-    httpd = socketserver.TCPServer(("", HTTP_PORT), Handler)
-    print("Server at port: ", HTTP_PORT)
-    httpd.serve_forever()
+
 
 def start_script():
     subprocess.run(["./run-server.sh"])
@@ -76,7 +70,7 @@ def start_script():
 @client.event
 async def on_ready():
     print(f"i am {client.user}")
-    threading.Thread(target=http_server, daemon=True).start()
+    threading.Thread(target=http_server, args=(HTTP_PORT,), daemon=True).start()
 
 @client.event
 async def on_message(message):
@@ -84,7 +78,7 @@ async def on_message(message):
     #if message.author == client.user:
      #   return
 
-    if message.content.startswith(".kurisu"):
+    if message.content.startswith(COMMAND_PREFIX):
         print(message.content)
         user_msg = message.content.split(" ")
         print(user_msg)
@@ -100,7 +94,7 @@ async def on_message(message):
                 now = datetime.now()
                 await message.channel.send(f"**Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**\n-# dev commit: `{commit}`")
                 if PRODUCTION_MODE == False:
-                    kurisu_devmode():
+                    kurisu_devmode()
                 try:
                     if DRY_RUN != True:
                         threading.Thread(target=start_script, daemon=True).start()
