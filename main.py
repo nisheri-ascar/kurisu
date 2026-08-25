@@ -13,6 +13,7 @@ import threading
 global version
 
 dotenv.load_dotenv()
+COMMAND_PREFIX = ".katagari"
 PRIV_TOKEN = str(os.getenv("TOKEN"))
 HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
 MC_IP_ADDR = str(os.getenv("MC_IP_ADDR"))
@@ -20,6 +21,11 @@ HTTP_PORT = 8080 # FIXME: use envvar
 #DRY_RUN = str(os.getenv("DRY_RUN"))
 DRY_RUN = True
 PRODUCTION_MODE=str(os.getenv("PRODUCTION_MODE"))
+PHASE_DONE = "🟢 Phase "
+PHASE_ERROR = "🔴 Phase "
+PHASE_PROGRESS = "🔶 Phase"
+b = "**"
+
 if DRY_RUN == True:
     BASE_TIME_WAIT = 0
 else:
@@ -32,7 +38,7 @@ try:
 except FileNotFoundError as err:
     print("can't find commit.")
     commit = "???"
-COMMAND_PREFIX = ".katagari"
+
 
 now = datetime.now()
 print(f"Crossed World Line at {now.strftime("%Y-%m-%d %H:%M:%S")} with commit {commit}")
@@ -41,10 +47,6 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 
-PHASE_DONE = "🟢 Phase "
-PHASE_ERROR = "🔴 Phase "
-PHASE_PROGRESS = "🔶 Phase"
-b = "**"
 
 @client.event
 async def on_ready():
