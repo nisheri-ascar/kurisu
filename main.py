@@ -46,18 +46,6 @@ PHASE_ERROR = "🔴 Phase "
 PHASE_PROGRESS = "🔶 Phase"
 b = "**"
 
-
-def check_variables():
-    if PRIV_TOKEN == "":
-        print("token empty!")
-        sys.exit(1)
-    if HOSTED_LINK == "":
-        print("HOSTED_LINK empty!")
-        sys.exit(1)
-    if MC_IP_ADDR == "":
-        print("MC_IP_ADDR emtpy!")
-        sys.exit(1)
-
 @client.event
 async def on_ready():
     print(f"i am {client.user}")
@@ -134,8 +122,5 @@ async def on_message(message):
 
 
 
-try:
-    client.run(PRIV_TOKEN)
-except KeyboardInterrupt as e:
-    print(f"exiting as stated from {e}")
-    sys.exit(0)
+client.run(PRIV_TOKEN)
+
