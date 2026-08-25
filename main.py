@@ -3,11 +3,11 @@ import dotenv
 import os
 import asyncio
 import httpx
-from mcstatus import JavaServer
 import sys
 import subprocess
 from datetime import datetime
 from dummy_http import http_server
+from server_status import check_server_status
 import threading
 
 global version
@@ -38,9 +38,8 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 
-async def kurisu_devmode():
-    await message.channel.send("-# This instance of kurisu environment is running locally.")
 
+    
 def check_variables():
     if PRIV_TOKEN == "":
         print("token empty!")
@@ -52,14 +51,6 @@ def check_variables():
         print("MC_IP_ADDR emtpy!")
         sys.exit(1)
 
-def check_server_status():
-    try:
-        server = JavaServer.lookup(MC_IP_ADDR)
-        status = server.status()
-        return 0
-    except:
-        print("cannot access server!!")
-        return 1
 
 
 
@@ -134,11 +125,11 @@ async def on_message(message):
                     await message.channel.send("**🟢 Phase 2**: Minecraft Server is accessable ")
                 else:
                     await message.channel.send("**🔴 Phase 2**: Minecraft Server is down! Is proxy down? ")
+                    await message.channel.send("-# This instance of kurisu environment is running locally.")
             elif user_msg[2] == "stop":
                 await message.channel.send("not implemented **(yet!)**")
 
 
-check_variables()
 try:
     client.run(PRIV_TOKEN)
 except KeyboardInterrupt as e:
