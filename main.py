@@ -85,7 +85,7 @@ async def on_message(message):
                 now = datetime.now()
                 await message.channel.send(f"**Server started by {message.author} at {now.strftime("%Y-%m-%d %H:%M:%S")}**\n-# dev commit: `{commit}`")
                 if PRODUCTION_MODE == False:
-                    kurisu_devmode()
+                    pass
                 try:
                     if DRY_RUN != True:
                         threading.Thread(target=start_script, daemon=True).start()
