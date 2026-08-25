@@ -17,9 +17,13 @@ PRIV_TOKEN = str(os.getenv("TOKEN"))
 HOSTED_LINK = str(os.getenv("HOSTED_LINK"))
 MC_IP_ADDR = str(os.getenv("MC_IP_ADDR"))
 HTTP_PORT = 8080 # FIXME: use envvar
-DRY_RUN = str(os.getenv("DRY_RUN"))
+#DRY_RUN = str(os.getenv("DRY_RUN"))
+DRY_RUN = True
 PRODUCTION_MODE=str(os.getenv("PRODUCTION_MODE"))
-BASE_TIME_WAIT=30
+if DRY_RUN == True:
+    BASE_TIME_WAIT = 0
+else:
+    BASE_TIME_WAIT=30
 httpd = None
 
 try:
@@ -37,9 +41,12 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 
+PHASE_DONE = "🟢 Phase "
+PHASE_ERROR = "🔴 Phase "
+PHASE_PROGRESS = "🔶 Phase"
+b = "**"
 
 
-    
 def check_variables():
     if PRIV_TOKEN == "":
         print("token empty!")
@@ -87,47 +94,51 @@ async def on_message(message):
                 if PRODUCTION_MODE == False:
                     pass
                 try:
+                    PHASE_LEVEL = 0
                     if DRY_RUN != True:
                         threading.Thread(target=start_script, daemon=True).start()
                         # FIXME: when implementing stop command, please make this have some flags.
                         # FIXME: add some guard check if the server is started multiple times OR server is in process of starting
                     else:
-                        pass
+                        await message.channel.send(f"{b}DRY_RUN is set to True. Waiting time will be skipped and script will not be ran.{b}")
                 except:
-                    await message.channel.send("**🔴 Phase 0**: Failed to run start script!")
+                    await message.channel.send(f"{b}{PHASE_ERROR}{PHASE_LEVEL}{b}: Failed to run start script!")
                 else:
-                    await message.channel.send("**🟢 Phase 0**: Successfully started script!")
+                    await message.channel.send(f"{b}{PHASE_DONE}{PHASE_LEVEL}{b}: Successfully started script!")
 
                 #phase 1
-                msg = await message.channel.send(f"**🔶 Phase 1**: checking if i can access the remote shell *({BASE_TIME_WAIT}s)*")
+                PHASE_LEVEL = 1
+                msg = await message.channel.send(f"{b}{PHASE_PROGRESS}{PHASE_LEVEL}{b}: checking if i can access the remote shell *({BASE_TIME_WAIT}s)*")
                 await asyncio.sleep(BASE_TIME_WAIT*2)
                 async with httpx.AsyncClient() as status:
                     try:
                         r = await status.get("http://127.0.0.1:6969")
                     except:
-                        await msg.edit(content="**🔴 Phase 1**: ERROR, Cannot access Remote Shell!")
+                        await msg.edit(content=f"{b}{PHASE_ERROR}{PHASE_LEVEL}{b}: Cannot access Remote Shell!")
                     else:
                         print("success")
-                        await msg.edit(content="**🟢 Phase 1**: Cloud Server is accessable")
+                        await msg.edit(content=f"{b}{PHASE_DONE}{PHASE_LEVEL}{b}: Cloud Server is accessable")
 
                 # phase 2
-                msg = await message.channel.send(f"**🔶 Phase 2**: Checking Public IP Minecraft Server *({BASE_TIME_WAIT*3}s)* ")
+                PHASE_LEVEL = 2
+                msg = await message.channel.send(f"{b}{PHASE_PROGRESS}{PHASE_LEVEL}{b}: Checking Public IP Minecraft Server *({BASE_TIME_WAIT*3}s)* ")
                 await asyncio.sleep(BASE_TIME_WAIT*3)
                 if check_server_status() == 0:
-                    await msg.edit("**🟢 Phase 2**: Minecraft Server is accessable ")
+                    await msg.edit(f"{b}{PHASE_DONE}{PHASE_LEVEL}{b}: Minecraft Server is accessable ")
                     await message.channel.send("**note:** server stops after 3 minutes of no players! be sure to join immediately!")
                 else:
-                    await msg.edit("**🔴 Phase 2**: Minecraft Server is down! Is proxy down? ")
+                    await msg.edit(f"{b}{PHASE_ERROR}{PHASE_LEVEL}{b}: Minecraft Server is down! Is proxy down? ")
 
             elif user_msg[2] == "check":
                 # FIXME: Dont Repeat Yourself!
                 if check_server_status() == 0:
-                    await message.channel.send("**🟢 Phase 2**: Minecraft Server is accessable ")
+                    await message.channel.send(f"checking: Minecraft Server is accessable ")
                 else:
-                    await message.channel.send("**🔴 Phase 2**: Minecraft Server is down! Is proxy down? ")
+                    await message.channel.send(f"checking: Minecraft Server is down! Is proxy down? ")
                     await message.channel.send("-# This instance of kurisu environment is running locally.")
             elif user_msg[2] == "stop":
                 await message.channel.send("not implemented **(yet!)**")
+
 
 
 try:
