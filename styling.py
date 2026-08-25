@@ -1,0 +1,4 @@
+PHASE_DONE = "🟢 Phase "
+PHASE_ERROR = "🔴 Phase "
+PHASE_PROGRESS = "🔶 Phase"
+b = "**"

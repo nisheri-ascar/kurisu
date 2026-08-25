@@ -8,6 +8,7 @@ from datetime import datetime
 from dummy_http import http_server
 from server_status import check_server_status
 from script_handler import start_script
+from styling import *
 import threading
 
 global version
@@ -21,10 +22,7 @@ HTTP_PORT = 8080 # FIXME: use envvar
 #DRY_RUN = str(os.getenv("DRY_RUN"))
 DRY_RUN = True
 PRODUCTION_MODE=str(os.getenv("PRODUCTION_MODE"))
-PHASE_DONE = "🟢 Phase "
-PHASE_ERROR = "🔴 Phase "
-PHASE_PROGRESS = "🔶 Phase"
-b = "**"
+
 
 if DRY_RUN == True:
     BASE_TIME_WAIT = 0
@@ -40,8 +38,7 @@ except FileNotFoundError as err:
     commit = "???"
 
 
-now = datetime.now()
-print(f"Crossed World Line at {now.strftime("%Y-%m-%d %H:%M:%S")} with commit {commit}")
+print(f"Crossed World Line at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} with commit {commit}")
 intents = discord.Intents.default()
 intents.message_content = True
 
