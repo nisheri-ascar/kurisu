@@ -4,10 +4,10 @@ import os
 import asyncio
 import httpx
 import sys
-import subprocess
 from datetime import datetime
 from dummy_http import http_server
 from server_status import check_server_status
+from script_handler import start_script
 import threading
 
 global version
@@ -57,13 +57,6 @@ def check_variables():
     if MC_IP_ADDR == "":
         print("MC_IP_ADDR emtpy!")
         sys.exit(1)
-
-
-
-
-def start_script():
-    subprocess.run(["./run-server.sh"])
-
 
 @client.event
 async def on_ready():
