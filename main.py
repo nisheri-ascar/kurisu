@@ -23,8 +23,8 @@ BASE_TIME_WAIT=30
 httpd = None
 global version
 try:
-    file_commit = open("/version", 'r')
-    commit = file_commit.read()
+    file_commit = open("./version", 'r')
+    commit = file_commit.read().strip()
 except FileNotFoundError as err:
     print("can't find commit.")
     commit = "???"
