@@ -60,39 +60,40 @@ async def ping(ctx: discord.Interaction):
 async def start(ctx: discord.Interaction):
     PHASE_LEVEL = 0
     await ctx.response.defer()
-    await ctx.followup.send(f"**Server started**\n{"\n".join(subtext_notes)}") # temporarily remove format for now
+    await ctx.followup.send(f"**Server started**\n{"\n".join(subtext_notes)}")
+    phase_msg = await ctx.channel.send(f"{b}{PHASE_PROGRESS}{b}: Checking if the script is executable")
     try:
         if DRY_RUN != True:
             threading.Thread(target=start_script, daemon=True).start()
             # FIXME: when implementing stop command, please make this have some flags.
             # FIXME: add some guard check if the server is started multiple times OR server is in process of starting
     except:
-        await ctx.channel.send(f"{b}{PHASE_ERROR}{PHASE_LEVEL}{b}: Failed to run start script!")
+        await phase_msg.edit(f"{b}{PHASE_ERROR}{PHASE_LEVEL}{b}: Failed to run start script!")
     else:
-        await ctx.channel.send(f"{b}{PHASE_DONE}{PHASE_LEVEL}{b}: Successfully started script!")
+        await phase_msg.edit(f"{b}{PHASE_DONE}{PHASE_LEVEL}{b}: Successfully started script!")
 
     #phase 1
     PHASE_LEVEL = 1
-    msg = await ctx.channel.send(f"{b}{PHASE_PROGRESS}{PHASE_LEVEL}{b}: checking if i can access the remote shell *({BASE_TIME_WAIT}s)*")
+    await phase_msg.edit(f"{b}{PHASE_PROGRESS}{PHASE_LEVEL}{b}: checking if i can access the remote shell *({BASE_TIME_WAIT}s)*")
     await asyncio.sleep(BASE_TIME_WAIT*2)
     async with httpx.AsyncClient() as status:
         try:
             r = await status.get("http://127.0.0.1:6969")
         except:
-            await msg.edit(content=f"{b}{PHASE_ERROR}{PHASE_LEVEL}{b}: Cannot access Remote Shell!")
+            await phase_msg.edit(content=f"{b}{PHASE_ERROR}{PHASE_LEVEL}{b}: Cannot access Remote Shell!")
         else:
             print("success")
-            await msg.edit(content=f"{b}{PHASE_DONE}{PHASE_LEVEL}{b}: Cloud Server is accessable")
+            await phase_msg.edit(content=f"{b}{PHASE_DONE}{PHASE_LEVEL}{b}: Cloud Server is accessable")
 
     # phase 2
     PHASE_LEVEL = 2
-    msg = await ctx.channel.send(f"{b}{PHASE_PROGRESS}{PHASE_LEVEL}{b}: Checking Public IP Minecraft Server *({BASE_TIME_WAIT*3}s)* ")
+    await phase_msg.edit(f"{b}{PHASE_PROGRESS}{PHASE_LEVEL}{b}: Checking Public IP Minecraft Server *({BASE_TIME_WAIT*3}s)* ")
     await asyncio.sleep(BASE_TIME_WAIT*3)
     if check_server_status() == 0:
-        await msg.edit(f"{b}{PHASE_DONE}{PHASE_LEVEL}{b}: Minecraft Server is accessable ")
+        await phase_msg.edit(f"{b}{PHASE_DONE}{PHASE_LEVEL}{b}: Minecraft Server is accessable ")
         await ctx.channel.send("**note:** server stops after 3 minutes of no players! be sure to join immediately!")
     else:
-        await msg.edit(f"{b}{PHASE_ERROR}{PHASE_LEVEL}{b}: Minecraft Server is down! Is proxy down? ")
+        await phase_msg.edit(f"{b}{PHASE_ERROR}{PHASE_LEVEL}{b}: Minecraft Server is down! Is proxy down? ")
 
 @bot.slash_command(name="check", description="Check minecraft server\'s status")
 async def check(ctx: discord.Interaction):
