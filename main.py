@@ -14,7 +14,6 @@ import threading
 
 global version
 
-       # elif user_msg[1] == "ping":
 dotenv.load_dotenv()
 COMMAND_PREFIX = ".katagari"
 PRIV_TOKEN = str(os.getenv("TOKEN"))
@@ -24,7 +23,7 @@ HTTP_PORT = 8080 # FIXME: use envvar
 #DRY_RUN = str(os.getenv("DRY_RUN"))
 DRY_RUN = True
 PRODUCTION_MODE=str(os.getenv("PRODUCTION_MODE"))
-GUILD_ID = 1529471469464191057
+GUILD_ID = [1529471469464191057, 1532949516171608236]
 
 if DRY_RUN == True:
     BASE_TIME_WAIT = 0
@@ -39,11 +38,18 @@ except FileNotFoundError as err:
     print("can't find commit.")
     commit = "???"
 
+subtext_notes = [f"{st}dev commit: `{commit}`"]
+
+if PRODUCTION_MODE != True:
+    subtext_notes.append(f"{st} `PRODUCTION_MODE` is not set. This instance of kurisu is running locally.")
+if DRY_RUN == True:
+    subtext_notes.append(f"{st} `DRY_RUN` is set to True. Waiting time will be skipped and script will not be ran.")
+
 
 print(f"Crossed World Line at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} with commit {commit}")
 
 intents = discord.Intents.default()
-bot = commands.Bot(command_prefix=".", intents=intents, debug_guilds=[GUILD_ID])
+bot = commands.Bot(command_prefix="/", intents=intents, debug_guilds=GUILD_ID)
 
 @bot.slash_command(name="ping", description="Check kurisu's latency")
 async def ping(ctx: discord.Interaction):
@@ -52,19 +58,14 @@ async def ping(ctx: discord.Interaction):
 
 @bot.slash_command(name="start", description="Start the Minecraft Server!")
 async def start(ctx: discord.Interaction):
+    PHASE_LEVEL = 0
     await ctx.response.defer()
-    await ctx.followup.send("**Server started by {message.author} at {now.strftime(\"%Y-%m-%d %H:%M:%S\")}**\n-# dev commit: `{commit}`") # temporarily remove format for now
-    await ctx.channel.send("-# This instance of kurisu environment is running locally.")
-    if PRODUCTION_MODE == False:
-        pass
+    await ctx.followup.send(f"**Server started**\n{"\n".join(subtext_notes)}") # temporarily remove format for now
     try:
-        PHASE_LEVEL = 0
         if DRY_RUN != True:
             threading.Thread(target=start_script, daemon=True).start()
             # FIXME: when implementing stop command, please make this have some flags.
             # FIXME: add some guard check if the server is started multiple times OR server is in process of starting
-        else:
-            await ctx.channel.send(f"{b}DRY_RUN is set to True. Waiting time will be skipped and script will not be ran.{b}")
     except:
         await ctx.channel.send(f"{b}{PHASE_ERROR}{PHASE_LEVEL}{b}: Failed to run start script!")
     else:
@@ -104,7 +105,6 @@ async def check(ctx: discord.Interaction):
 @bot.event
 async def on_ready():
     print(f"i am {bot.user}")
-    guild = discord.Object(id=GUILD_ID)
     threading.Thread(target=http_server, args=(HTTP_PORT,), daemon=True).start()
 
 bot.run(PRIV_TOKEN)
