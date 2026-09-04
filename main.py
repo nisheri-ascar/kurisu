@@ -43,7 +43,7 @@ subtext_notes = [f"{st}dev commit: `{commit}`"]
 if PRODUCTION_MODE != True:
     subtext_notes.append(f"{st} `PRODUCTION_MODE` is not set. This instance of kurisu is running locally.")
 if DRY_RUN == True:
-    subtext_notes.append(f"{st} `DRY_RUN` is set to True. Waiting time will be skipped and script will not be ran.")
+    subtext_notes.append(f"{st} `DRY_RUN` is set to True. Waiting time will be skipped and script will not be executed.")
 
 
 print(f"Crossed World Line at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} with commit {commit}")
