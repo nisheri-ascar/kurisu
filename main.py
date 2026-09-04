@@ -52,6 +52,7 @@ print(f"Crossed World Line at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} wit
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="/", intents=intents, debug_guilds=GUILD_ID)
+bot.load_extension("cogs.minecraft")
 
 @bot.slash_command(name="ping", description="Check kurisu's latency")
 async def ping(ctx: discord.Interaction):
@@ -106,6 +107,7 @@ async def check(ctx: discord.Interaction):
 async def on_ready():
     print(f"i am {bot.user}")
     threading.Thread(target=http_server, args=(HTTP_PORT,), daemon=True).start()
+
 
 bot.run(PRIV_TOKEN)
 
