@@ -15,5 +15,3 @@ def phase_header_text(level_status, level_current, level_max):
 	else:
 		text = "unknown"
 	return text
-
-print(phase_header_text("fail", 0, 3))

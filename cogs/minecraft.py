@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from backend_interaction import start_remote
 
 class Minecraft(commands.Cog):
 	def __init__(self, bot):
@@ -16,7 +17,7 @@ class Minecraft(commands.Cog):
 
 	@server.command()
 	async def start(self, ctx):
-		await ctx.respond("success!")
+		await start_remote.start(ctx)
 
 
 
