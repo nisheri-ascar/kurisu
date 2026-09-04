@@ -1,13 +1,13 @@
-# kurisu (Kristofer's Unified Remote Interface (for Minecraft) Server Upscaling)
+# kurisu (Kurisu's Unified Remote Interface for Server Utilities)
 
-self explanatory
+**This project is heavily WIP, no documents is available yet. Expect unreliability for now**
 
-# Phases
-1. Check if server is alive, via checking port 6969
-2. Check if public ip address is accessable (both in java, bedrock)
+# What is this? 
+Imagine you and your friends have a certain game server that needs to be started, although to save provider costs you chose to let it be closed sometime after no players to save money. Kurisu aims to solve this problem! With just `.kurisu <game> server start` you can start it with no problems! 
 
-# files
-`fake_home_{int)/` - stores virtual files meant for ssh config and keys
+
+# Dependencies
+Relies on [kurisu-base](https://www.github.com/nisheri-ascar/kurisu-base) and [hiyajo](https://www.github.com/nisheri-ascar/hiyajo) (backend) 
 
 
 
