@@ -17,7 +17,7 @@ GUILD_ID = [1529471469464191057, 1532949516171608236]
 
 try:
     file_commit = open("/version", 'r')
-    commit = file_commit.read()
+    commit = file_commit.read().strip()
 except FileNotFoundError as err:
     print("can't find commit.")
     commit = "???"
